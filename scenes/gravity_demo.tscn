@@ -5,12 +5,17 @@ script/source = "extends RigidBody2D
 @onready var planet: StaticBody2D = $\"../Planet\"
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 @onready var line_2d: Line2D = $\"../Line2D\"
+@onready var planet_rotate: StaticBody2D = $\"../Planet\"
+@onready var planet_2_rotate: StaticBody2D = $\"../Planet2\"
+@onready var planet_1_rotate: StaticBody2D = $\"../Planet\"
 
-
-var camera_size = Vector2(540,320)
+var planet_1_radius = 1000
+var planet_2_radius =500
+var camera_size = Vector2(530,320)
 
 var prediction_timer = 0
 
+var angle =0
 var rocket_mass = 10
 var planet_mass = 100000
 
@@ -44,8 +49,10 @@ func _ready() -> void:
 '''
 
 func _physics_process(delta: float) -> void:
-	
-	
+	angle += 0.01 * delta
+	planet_1_rotate.position = Vector2(cos(angle)*planet_1_radius, sin(angle)*planet_1_radius)
+	planet_2_rotate.position = Vector2(cos(angle)*planet_2_radius, sin(angle)*planet_2_radius)
+
 	dis_x = planet.global_position.x - global_position.x
 	dis_y = planet.global_position.y - global_position.y
 	
@@ -167,20 +174,6 @@ texture = SubResource("GradientTexture2D_cu4ke")
 
 [node name="Camera2D" type="Camera2D" parent="Rocket" unique_id=1967389116]
 
-[node name="Planet" type="StaticBody2D" parent="." unique_id=1071814491]
-position = Vector2(305, 438)
-
-[node name="Ball" type="Sprite2D" parent="Planet" unique_id=219472428]
-texture = SubResource("GradientTexture2D_yfnbx")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Planet" unique_id=1267658693]
-shape = SubResource("CircleShape2D_cgm5g")
-
-[node name="AreaGravityInfluence" type="Area2D" parent="Planet/CollisionShape2D" unique_id=1696961229]
-
-[node name="CollisionGravityInfluence" type="CollisionShape2D" parent="Planet/CollisionShape2D/AreaGravityInfluence" unique_id=866827084]
-shape = SubResource("CircleShape2D_0yd1l")
-
 [node name="Line2D" type="Line2D" parent="." unique_id=702620799]
 round_precision = 1
 
@@ -198,5 +191,19 @@ shape = SubResource("CircleShape2D_cgm5g")
 [node name="CollisionGravityInfluence" type="CollisionShape2D" parent="Planet2/AreaGravityInfluence2" unique_id=463707772]
 shape = SubResource("CircleShape2D_0yd1l")
 
-[connection signal="body_entered" from="Planet/CollisionShape2D/AreaGravityInfluence" to="Rocket" method="_on_area_gravity_influence_body_entered"]
+[node name="Planet" type="StaticBody2D" parent="." unique_id=1071814491]
+position = Vector2(305, 438)
+
+[node name="Ball" type="Sprite2D" parent="Planet" unique_id=219472428]
+texture = SubResource("GradientTexture2D_yfnbx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Planet" unique_id=1267658693]
+shape = SubResource("CircleShape2D_cgm5g")
+
+[node name="AreaGravityInfluence" type="Area2D" parent="Planet/CollisionShape2D" unique_id=1696961229]
+
+[node name="CollisionGravityInfluence" type="CollisionShape2D" parent="Planet/CollisionShape2D/AreaGravityInfluence" unique_id=866827084]
+shape = SubResource("CircleShape2D_0yd1l")
+
 [connection signal="body_entered" from="Planet2/AreaGravityInfluence2" to="Rocket" method="_on_area_gravity_influence_2_body_entered"]
+[connection signal="body_entered" from="Planet/CollisionShape2D/AreaGravityInfluence" to="Rocket" method="_on_area_gravity_influence_body_entered"]
