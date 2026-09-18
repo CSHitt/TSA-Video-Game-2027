@@ -5,9 +5,9 @@ script/source = "extends RigidBody2D
 @onready var planet: StaticBody2D = $\"../Planet\"
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 @onready var line_2d: Line2D = $\"../Line2D\"
-@onready var label: Label = $\"../Label\"
 
-var camera_size = Vector2(500,320)
+
+var camera_size = Vector2(540,320)
 
 var prediction_timer = 0
 
@@ -28,12 +28,11 @@ var dis_x
 var dis_y
 
 func _ready() -> void:
-	
 	mass = rocket_mass
 	gravity_scale = 0.0
 	linear_damp_mode = RigidBody2D.DAMP_MODE_REPLACE
 	linear_damp = 0.0
-	apply_impulse(Vector2(-100,-10))
+	apply_impulse(Vector2(-10,-10))
 
 	'''#for orbits
 	var offset = global_position - planet.global_position
@@ -45,6 +44,8 @@ func _ready() -> void:
 '''
 
 func _physics_process(delta: float) -> void:
+	
+	
 	dis_x = planet.global_position.x - global_position.x
 	dis_y = planet.global_position.y - global_position.y
 	
@@ -69,7 +70,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		move.x = 0
 	
-	apply_central_force(gravity_dir + (move*100))
+	apply_central_force(gravity_dir + (move*1000))
 	#print(gravity_dis)
 	
 	
@@ -77,7 +78,7 @@ func _physics_process(delta: float) -> void:
 	#predict trajeectory is made by chatgpt, edit it later to make it myself
 	prediction_timer += 1
 
-	if prediction_timer >= 12:
+	if prediction_timer >= 1:
 		prediction_timer = 0
 		predict_trajectory(delta)
 	
@@ -87,7 +88,7 @@ func predict_trajectory(delta: float) -> void:
 	var line_on_cam = true
 	var pos = global_position
 	var vel = linear_velocity
-	var step = delta * 6.0
+	var step = delta * 15.0
 
 	while line_on_cam == true:
 		var dis = planet.global_position - pos
@@ -103,13 +104,22 @@ func predict_trajectory(delta: float) -> void:
 		var last_point = round((line_2d.get_point_position(line_2d.get_point_count()-1)))
 		
 		#my code
-		if last_point.x >= camera_size.x or last_point.x <= camera_size.x *-1:
+		if last_point.x >= camera_size.x+global_position.x or last_point.x <= (camera_size.x-global_position.x) *-1:
 			line_on_cam = false
-		if last_point.y >= camera_size.y or last_point.y <= camera_size.y *-1:
+		if last_point.y >= camera_size.y + global_position.y or last_point.y <= (camera_size.y-global_position.y) *-1:
 			line_on_cam = false
-		if line_2d.get_point_count() >=1000:
+		if line_2d.get_point_count() >=800:
 			line_on_cam = false
 		
+
+
+func _on_area_gravity_influence_body_entered(body: Node2D) -> void:
+	planet = $\"../Planet\"
+
+
+
+func _on_area_gravity_influence_2_body_entered(body: Node2D) -> void:
+	planet = $\"../Planet2\"
 "
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_u7mw5"]
@@ -138,6 +148,9 @@ fill_from = Vector2(0.5, 0.5)
 [sub_resource type="CircleShape2D" id="CircleShape2D_cgm5g"]
 radius = 27.018513
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_0yd1l"]
+radius = 400.0
+
 [node name="GravityDemo" type="Node2D" unique_id=1806211021]
 
 [node name="Rocket" type="RigidBody2D" parent="." unique_id=370543859]
@@ -152,9 +165,10 @@ shape = SubResource("CircleShape2D_u7mw5")
 [node name="Ball" type="Sprite2D" parent="Rocket" unique_id=811025890]
 texture = SubResource("GradientTexture2D_cu4ke")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1967389116]
+[node name="Camera2D" type="Camera2D" parent="Rocket" unique_id=1967389116]
 
 [node name="Planet" type="StaticBody2D" parent="." unique_id=1071814491]
+position = Vector2(305, 438)
 
 [node name="Ball" type="Sprite2D" parent="Planet" unique_id=219472428]
 texture = SubResource("GradientTexture2D_yfnbx")
@@ -162,5 +176,27 @@ texture = SubResource("GradientTexture2D_yfnbx")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Planet" unique_id=1267658693]
 shape = SubResource("CircleShape2D_cgm5g")
 
+[node name="AreaGravityInfluence" type="Area2D" parent="Planet/CollisionShape2D" unique_id=1696961229]
+
+[node name="CollisionGravityInfluence" type="CollisionShape2D" parent="Planet/CollisionShape2D/AreaGravityInfluence" unique_id=866827084]
+shape = SubResource("CircleShape2D_0yd1l")
+
 [node name="Line2D" type="Line2D" parent="." unique_id=702620799]
 round_precision = 1
+
+[node name="Planet2" type="StaticBody2D" parent="." unique_id=230906139]
+position = Vector2(-200, -200)
+
+[node name="Ball" type="Sprite2D" parent="Planet2" unique_id=1635682273]
+texture = SubResource("GradientTexture2D_yfnbx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Planet2" unique_id=1106179704]
+shape = SubResource("CircleShape2D_cgm5g")
+
+[node name="AreaGravityInfluence2" type="Area2D" parent="Planet2" unique_id=1227265498]
+
+[node name="CollisionGravityInfluence" type="CollisionShape2D" parent="Planet2/AreaGravityInfluence2" unique_id=463707772]
+shape = SubResource("CircleShape2D_0yd1l")
+
+[connection signal="body_entered" from="Planet/CollisionShape2D/AreaGravityInfluence" to="Rocket" method="_on_area_gravity_influence_body_entered"]
+[connection signal="body_entered" from="Planet2/AreaGravityInfluence2" to="Rocket" method="_on_area_gravity_influence_2_body_entered"]
