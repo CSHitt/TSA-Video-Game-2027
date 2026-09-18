@@ -107,6 +107,8 @@ func predict_trajectory(delta: float) -> void:
 			line_on_cam = false
 		if last_point.y >= camera_size.y or last_point.y <= camera_size.y *-1:
 			line_on_cam = false
+		if line_2d.get_point_count() >=1000:
+			line_on_cam = false
 		
 "
 
