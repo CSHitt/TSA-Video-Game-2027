@@ -1,5 +1,17 @@
 [gd_scene format=3 uid="uid://r6ymjh7wdsmi"]
 
+[sub_resource type="Gradient" id="Gradient_cu4ke"]
+offsets = PackedFloat32Array(0.85542166, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_sc5ad"]
+frequency = 1.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_kps3k"]
+width = 1024
+height = 1024
+noise = SubResource("FastNoiseLite_sc5ad")
+color_ramp = SubResource("Gradient_cu4ke")
+
 [sub_resource type="GDScript" id="GDScript_0yd1l"]
 script/source = "extends RigidBody2D
 @onready var planet: StaticBody2D = $\"../Planet\"
@@ -11,7 +23,8 @@ script/source = "extends RigidBody2D
 
 var camera_size = Vector2(560,320)
 
-var up_down_move = 1
+var up_down_move = 10
+var left_right_move = 10
 
 var zoom_amount = 0.01
 var prediction_timer = 0
@@ -72,9 +85,9 @@ func _physics_process(delta: float) -> void:
 	else:
 		move.y = 0
 	if Input.is_action_pressed(\"ui_right\"):
-		move.x = 1
+		move.x = left_right_move
 	elif Input.is_action_pressed(\"ui_left\"):
-		move.x = -1
+		move.x = -left_right_move
 	else:
 		move.x = 0
 	
@@ -161,6 +174,10 @@ radius = 27.018513
 radius = 400.0
 
 [node name="GravityDemo" type="Node2D" unique_id=1806211021]
+
+[node name="Background" type="Sprite2D" parent="." unique_id=2045370895]
+scale = Vector2(1.5, 1.5)
+texture = SubResource("NoiseTexture2D_kps3k")
 
 [node name="Rocket" type="RigidBody2D" parent="." unique_id=370543859]
 position = Vector2(500, 0)
