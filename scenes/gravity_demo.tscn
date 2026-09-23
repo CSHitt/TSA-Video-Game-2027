@@ -11,6 +11,9 @@ script/source = "extends RigidBody2D
 
 var camera_size = Vector2(560,320)
 
+var up_down_move = 1
+
+var zoom_amount = 0.01
 var prediction_timer = 0
 
 var rocket_mass = 10
@@ -61,11 +64,11 @@ func _physics_process(delta: float) -> void:
 	
 	rocket_sprite.rotation = linear_velocity.angle()# - 1.5708
 	
-	var move = Vector2()
+	var move = Vector2().rotated(linear_velocity.angle())
 	if Input.is_action_pressed(\"ui_up\"):
-		move.y = -1
+		move.y = -up_down_move
 	elif Input.is_action_pressed(\"ui_down\"):
-		move.y = 1
+		move.y = up_down_move
 	else:
 		move.y = 0
 	if Input.is_action_pressed(\"ui_right\"):
@@ -79,10 +82,10 @@ func _physics_process(delta: float) -> void:
 	#print(gravity_dis)
 	
 	if Input.is_action_pressed(\"2\"):
-		camera_2d.zoom += Vector2(0.01,0.01)
+		camera_2d.zoom += Vector2(zoom_amount,zoom_amount)
 		
 	if Input.is_action_pressed(\"1\"):
-		camera_2d.zoom -= Vector2(0.01,0.01)
+		camera_2d.zoom -= Vector2(zoom_amount,zoom_amount)
 		
 	camera_size = (get_viewport_rect().size/2)/camera_2d.zoom
 	
@@ -119,10 +122,8 @@ func predict_trajectory(delta: float) -> void:
 			line_on_cam = false
 		if last_point.y >= camera_size.y + global_position.y or last_point.y <= (camera_size.y-global_position.y) *-1:
 			line_on_cam = false
-		if line_2d.get_point_count() >=500:
+		if line_2d.get_point_count() >=100:
 			line_on_cam = false
-		
-
 
 func _on_area_gravity_influence_body_entered(body: Node2D) -> void:
 	planet = $\"../Planet\"
@@ -157,7 +158,7 @@ fill_from = Vector2(0.5, 0.5)
 radius = 27.018513
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0yd1l"]
-radius = 3000.0
+radius = 400.0
 
 [node name="GravityDemo" type="Node2D" unique_id=1806211021]
 
@@ -180,7 +181,7 @@ texture = SubResource("GradientTexture1D_0yd1l")
 round_precision = 1
 
 [node name="Planet2" type="StaticBody2D" parent="." unique_id=230906139]
-position = Vector2(-5421, 2276)
+position = Vector2(-497, 136)
 
 [node name="Ball" type="Sprite2D" parent="Planet2" unique_id=1635682273]
 texture = SubResource("GradientTexture2D_yfnbx")
