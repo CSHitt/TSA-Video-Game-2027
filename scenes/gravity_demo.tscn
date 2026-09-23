@@ -5,17 +5,13 @@ script/source = "extends RigidBody2D
 @onready var planet: StaticBody2D = $\"../Planet\"
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 @onready var line_2d: Line2D = $\"../Line2D\"
-@onready var planet_rotate: StaticBody2D = $\"../Planet\"
-@onready var planet_2_rotate: StaticBody2D = $\"../Planet2\"
-@onready var planet_1_rotate: StaticBody2D = $\"../Planet\"
+@onready var camera_2d: Camera2D = $Camera2D
 
-var planet_1_radius = 1000
-var planet_2_radius =500
-var camera_size = Vector2(530,320)
+
+var camera_size = Vector2(560,320)
 
 var prediction_timer = 0
 
-var angle =0
 var rocket_mass = 10
 var planet_mass = 100000
 
@@ -49,10 +45,9 @@ func _ready() -> void:
 '''
 
 func _physics_process(delta: float) -> void:
-	angle += 0.01 * delta
-	planet_1_rotate.position = Vector2(cos(angle)*planet_1_radius, sin(angle)*planet_1_radius)
-	planet_2_rotate.position = Vector2(cos(angle)*planet_2_radius, sin(angle)*planet_2_radius)
-
+	
+	
+	
 	dis_x = planet.global_position.x - global_position.x
 	dis_y = planet.global_position.y - global_position.y
 	
@@ -77,12 +72,18 @@ func _physics_process(delta: float) -> void:
 	else:
 		move.x = 0
 	
-	apply_central_force(gravity_dir + (move*1000))
+	apply_central_force(gravity_dir + (move*500*delta))
 	#print(gravity_dis)
 	
+	if Input.is_action_pressed(\"2\"):
+		camera_2d.zoom += Vector2(0.01,0.01)
+		
+	if Input.is_action_pressed(\"1\"):
+		camera_2d.zoom -= Vector2(0.01,0.01)
+		
+	camera_size = (get_viewport_rect().size/2)/camera_2d.zoom
 	
-	
-	#predict trajeectory is made by chatgpt, edit it later to make it myself
+	#predict trajeectory was made by chatgpt, edit it later to make it myself
 	prediction_timer += 1
 
 	if prediction_timer >= 1:
@@ -115,7 +116,7 @@ func predict_trajectory(delta: float) -> void:
 			line_on_cam = false
 		if last_point.y >= camera_size.y + global_position.y or last_point.y <= (camera_size.y-global_position.y) *-1:
 			line_on_cam = false
-		if line_2d.get_point_count() >=800:
+		if line_2d.get_point_count() >=500:
 			line_on_cam = false
 		
 
@@ -156,7 +157,7 @@ fill_from = Vector2(0.5, 0.5)
 radius = 27.018513
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_0yd1l"]
-radius = 400.0
+radius = 3000.0
 
 [node name="GravityDemo" type="Node2D" unique_id=1806211021]
 
@@ -178,7 +179,7 @@ texture = SubResource("GradientTexture2D_cu4ke")
 round_precision = 1
 
 [node name="Planet2" type="StaticBody2D" parent="." unique_id=230906139]
-position = Vector2(-200, -200)
+position = Vector2(-5421, 2276)
 
 [node name="Ball" type="Sprite2D" parent="Planet2" unique_id=1635682273]
 texture = SubResource("GradientTexture2D_yfnbx")
