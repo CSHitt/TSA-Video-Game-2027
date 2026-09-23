@@ -6,6 +6,7 @@ script/source = "extends RigidBody2D
 @onready var collision_shape_2d: CollisionShape2D = $CollisionShape2D
 @onready var line_2d: Line2D = $\"../Line2D\"
 @onready var camera_2d: Camera2D = $Camera2D
+@onready var rocket_sprite: Sprite2D = $RocketSprite
 
 
 var camera_size = Vector2(560,320)
@@ -58,6 +59,8 @@ func _physics_process(delta: float) -> void:
 
 	gravity_dir = Vector2(force_x, force_y)
 	
+	rocket_sprite.rotation = linear_velocity.angle()# - 1.5708
+	
 	var move = Vector2()
 	if Input.is_action_pressed(\"ui_up\"):
 		move.y = -1
@@ -96,7 +99,7 @@ func predict_trajectory(delta: float) -> void:
 	var line_on_cam = true
 	var pos = global_position
 	var vel = linear_velocity
-	var step = delta * 15.0
+	var step = delta * 150.0
 
 	while line_on_cam == true:
 		var dis = planet.global_position - pos
@@ -134,14 +137,11 @@ func _on_area_gravity_influence_2_body_entered(body: Node2D) -> void:
 radius = 27.018513
 
 [sub_resource type="Gradient" id="Gradient_0itoa"]
-interpolation_mode = 1
-offsets = PackedFloat32Array(0.56626505, 0.58433735)
-colors = PackedColorArray(0, 0, 0, 1, 1, 1, 1, 0)
+offsets = PackedFloat32Array(0.14457831, 0.16867469)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_cu4ke"]
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_0yd1l"]
 gradient = SubResource("Gradient_0itoa")
-fill = 1
-fill_from = Vector2(0.5, 0.5)
 
 [sub_resource type="Gradient" id="Gradient_xec7r"]
 interpolation_mode = 1
@@ -170,10 +170,11 @@ script = SubResource("GDScript_0yd1l")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Rocket" unique_id=2036557855]
 shape = SubResource("CircleShape2D_u7mw5")
 
-[node name="Ball" type="Sprite2D" parent="Rocket" unique_id=811025890]
-texture = SubResource("GradientTexture2D_cu4ke")
-
 [node name="Camera2D" type="Camera2D" parent="Rocket" unique_id=1967389116]
+
+[node name="RocketSprite" type="Sprite2D" parent="Rocket" unique_id=616662158]
+scale = Vector2(0.28773084, 47.903496)
+texture = SubResource("GradientTexture1D_0yd1l")
 
 [node name="Line2D" type="Line2D" parent="." unique_id=702620799]
 round_precision = 1
