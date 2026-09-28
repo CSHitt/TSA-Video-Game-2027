@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://bpoiucwnb268j"]
+
+[ext_resource type="PackedScene" uid="uid://2r74v1g81007" path="res://classes/TopDownPlayer.tscn" id="1_r3k1k"]
+
+[node name="Entrypoint" type="Node" unique_id=449962420]
+
+[node name="UI" type="Control" parent="." unique_id=1811285410]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Level" type="Node2D" parent="." unique_id=1562399016]
+
+[node name="TopDownPlayer" parent="Level" unique_id=305842151 instance=ExtResource("1_r3k1k")]
