@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://r6ymjh7wdsmi"]
 
+[ext_resource type="Texture2D" uid="uid://257w5a2k33f8" path="res://assets/RocketTransparent.png" id="1_xec7r"]
+
 [sub_resource type="Gradient" id="Gradient_cu4ke"]
 offsets = PackedFloat32Array(0.85542166, 1)
 
@@ -75,18 +77,18 @@ func _physics_process(delta: float) -> void:
 
 	gravity_dir = Vector2(force_x, force_y)
 	
-	rocket_sprite.rotation = linear_velocity.angle()# - 1.5708
+	rocket_sprite.rotation = linear_velocity.angle() + 1.51
 	
 	var move = Vector2().rotated(linear_velocity.angle())
-	if Input.is_action_pressed(\"ui_up\"):
+	if Input.is_action_pressed(\"game_left\"):
 		move.y = -up_down_move
-	elif Input.is_action_pressed(\"ui_down\"):
+	elif Input.is_action_pressed(\"game_right\"):
 		move.y = up_down_move
 	else:
 		move.y = 0
-	if Input.is_action_pressed(\"ui_right\"):
+	if Input.is_action_pressed(\"game_down\"):
 		move.x = left_right_move
-	elif Input.is_action_pressed(\"ui_left\"):
+	elif Input.is_action_pressed(\"game_up\"):
 		move.x = -left_right_move
 	else:
 		move.x = 0
@@ -150,13 +152,6 @@ func _on_area_gravity_influence_2_body_entered(body: Node2D) -> void:
 [sub_resource type="CircleShape2D" id="CircleShape2D_u7mw5"]
 radius = 27.018513
 
-[sub_resource type="Gradient" id="Gradient_0itoa"]
-offsets = PackedFloat32Array(0.14457831, 0.16867469)
-colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
-
-[sub_resource type="GradientTexture1D" id="GradientTexture1D_0yd1l"]
-gradient = SubResource("Gradient_0itoa")
-
 [sub_resource type="Gradient" id="Gradient_xec7r"]
 interpolation_mode = 1
 offsets = PackedFloat32Array(0.56626505, 0.58433735)
@@ -185,16 +180,19 @@ mass = 10.0
 gravity_scale = 0.0
 script = SubResource("GDScript_0yd1l")
 
+[node name="RocketSprite" type="Sprite2D" parent="Rocket" unique_id=293060014]
+z_index = 1
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("1_xec7r")
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Rocket" unique_id=2036557855]
 shape = SubResource("CircleShape2D_u7mw5")
 
 [node name="Camera2D" type="Camera2D" parent="Rocket" unique_id=1967389116]
-
-[node name="RocketSprite" type="Sprite2D" parent="Rocket" unique_id=616662158]
-scale = Vector2(0.28773084, 47.903496)
-texture = SubResource("GradientTexture1D_0yd1l")
+zoom = Vector2(0.895, 0.895)
 
 [node name="Line2D" type="Line2D" parent="." unique_id=702620799]
+width = 5.0
 round_precision = 1
 
 [node name="Planet2" type="StaticBody2D" parent="." unique_id=230906139]
