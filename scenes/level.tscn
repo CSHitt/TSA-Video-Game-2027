@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://c40k36uxs2dbd"]
+
+[ext_resource type="PackedScene" uid="uid://2r74v1g81007" path="res://classes/TopDownPlayer.tscn" id="1_2q6dc"]
+
+[node name="Level" type="Node2D" unique_id=1749514329]
+
+[node name="TopDownPlayer" parent="." unique_id=305842151 instance=ExtResource("1_2q6dc")]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=582739884]
+
+[node name="UI" type="Control" parent="." unique_id=1593846483]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Node2D" type="Node2D" parent="." unique_id=1951923124]
