@@ -15,3 +15,5 @@ grow_vertical = 2
 [node name="Level" type="Node2D" parent="." unique_id=1562399016]
 
 [node name="TopDownPlayer" parent="Level" unique_id=305842151 instance=ExtResource("1_r3k1k")]
+
+[node name="Map" type="TileMapLayer" parent="Level" unique_id=853735158]
