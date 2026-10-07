@@ -80,9 +80,9 @@ func _physics_process(delta: float) -> void:
 	rocket_sprite.rotation = linear_velocity.angle() + 1.51
 	
 	var move = Vector2().rotated(linear_velocity.angle())
-	if Input.is_action_pressed(\"game_left\"):
+	if Input.is_action_pressed(\"game_right\"):
 		move.y = -up_down_move
-	elif Input.is_action_pressed(\"game_right\"):
+	elif Input.is_action_pressed(\"game_left\"):
 		move.y = up_down_move
 	else:
 		move.y = 0
@@ -155,7 +155,7 @@ radius = 27.018513
 [sub_resource type="Gradient" id="Gradient_xec7r"]
 interpolation_mode = 1
 offsets = PackedFloat32Array(0.56626505, 0.58433735)
-colors = PackedColorArray(0, 0, 0, 1, 1, 1, 1, 0)
+colors = PackedColorArray(0.8592523, 0.41254613, 0.40465057, 1, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_yfnbx"]
 gradient = SubResource("Gradient_xec7r")
@@ -171,7 +171,8 @@ radius = 400.0
 [node name="GravityDemo" type="Node2D" unique_id=1806211021]
 
 [node name="Background" type="Sprite2D" parent="." unique_id=2045370895]
-scale = Vector2(1.5, 1.5)
+position = Vector2(194, 264.00006)
+scale = Vector2(3.118164, 3.1611328)
 texture = SubResource("NoiseTexture2D_kps3k")
 
 [node name="Rocket" type="RigidBody2D" parent="." unique_id=370543859]
