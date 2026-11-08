@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://b7olqdwupivx2"]
+
+[ext_resource type="Script" uid="uid://dvhqy1mh1dkna" path="res://scripts/PlanetGenerator/planet_generator.gd" id="1_57qqk"]
+
+[node name="PlanetGenerator" type="Node3D" unique_id=486556321]
+script = ExtResource("1_57qqk")
+subdivisions_per_edge = 4
