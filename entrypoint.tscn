@@ -1,3 +1,56 @@
 [gd_scene format=3 uid="uid://bpoiucwnb268j"]
 
+[ext_resource type="PackedScene" uid="uid://c40k36uxs2dbd" path="res://scenes/level.tscn" id="1_r3k1k"]
+[ext_resource type="Script" uid="uid://bxyym0rxj2ssc" path="res://scripts/entrypoint/debug_display.gd" id="2_jsc7b"]
+
 [node name="Entrypoint" type="Node" unique_id=449962420]
+
+[node name="Level" parent="." unique_id=1749514329 instance=ExtResource("1_r3k1k")]
+
+[node name="Control" type="Control" parent="." unique_id=1863141043]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Debug" type="Control" parent="Control" unique_id=2043121468]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("2_jsc7b")
+
+[node name="x_position" type="Label" parent="Control/Debug" unique_id=831967788]
+layout_mode = 1
+offset_right = 40.0
+offset_bottom = 23.0
+text = "x_position: "
+
+[node name="y_position" type="Label" parent="Control/Debug" unique_id=1511160306]
+layout_mode = 1
+offset_top = 23.0
+offset_right = 87.0
+offset_bottom = 46.0
+text = "y_position: "
+
+[node name="x_velocity" type="Label" parent="Control/Debug" unique_id=2103436742]
+layout_mode = 1
+offset_top = 46.0
+offset_right = 87.0
+offset_bottom = 69.0
+text = "x_position: "
+
+[node name="y_velocity" type="Label" parent="Control/Debug" unique_id=982193557]
+layout_mode = 1
+offset_top = 69.0
+offset_right = 87.0
+offset_bottom = 92.0
+text = "y_position: "
+
+[node name="state" type="Label" parent="Control/Debug" unique_id=905287411]
+layout_mode = 0
+offset_top = 92.0
+offset_right = 48.0
+offset_bottom = 115.0
+text = "state: "

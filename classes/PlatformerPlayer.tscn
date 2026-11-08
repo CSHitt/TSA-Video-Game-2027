@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://fu584ahuld06"]
+
+[ext_resource type="Script" uid="uid://dc44st6oq8qqd" path="res://scripts/PlatformerPlayer/PlatformerPlayer.gd" id="1_aa3ot"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g4v7s"]
+size = Vector2(32, 64)
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_g4v7s"]
+size = Vector2(32, 64)
+
+[node name="PlatformerPlayer" type="CharacterBody2D" unique_id=1289795932]
+script = ExtResource("1_aa3ot")
+WalkingSpeed = null
+CrouchingSpeed = null
+SprintingSpeed = null
+JumpingSpeed = null
+
+[node name="Collider" type="CollisionShape2D" parent="." unique_id=214912915]
+shape = SubResource("RectangleShape2D_g4v7s")
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=877837335]
+texture_filter = 1
+texture_repeat = 2
+texture = SubResource("PlaceholderTexture2D_g4v7s")

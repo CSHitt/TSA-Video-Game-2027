@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://c40k36uxs2dbd"]
 
-[ext_resource type="PackedScene" uid="uid://2r74v1g81007" path="res://classes/TopDownPlayer.tscn" id="1_2q6dc"]
+[ext_resource type="PackedScene" uid="uid://fu584ahuld06" path="res://classes/PlatformerPlayer.tscn" id="1_2q6dc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g4v7s"]
+size = Vector2(400, 20)
 
 [node name="Level" type="Node2D" unique_id=1749514329]
 
@@ -12,6 +15,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="TopDownPlayer" parent="." unique_id=305842151 instance=ExtResource("1_2q6dc")]
+[node name="Player" parent="." unique_id=1289795932 instance=ExtResource("1_2q6dc")]
+position = Vector2(183, 111)
 
-[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=582739884]
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=412981706]
+position = Vector2(299, 274)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=443358585]
+shape = SubResource("RectangleShape2D_g4v7s")
