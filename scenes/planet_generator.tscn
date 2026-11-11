@@ -1,7 +1,60 @@
 [gd_scene format=3 uid="uid://b7olqdwupivx2"]
 
 [ext_resource type="Script" uid="uid://dvhqy1mh1dkna" path="res://scripts/PlanetGenerator/planet_generator.gd" id="1_57qqk"]
+[ext_resource type="Script" uid="uid://b7wtac62qb1fc" path="res://scripts/PlanetGenerator/NoiseLayer.gd" id="2_kjtt4"]
+
+[sub_resource type="Curve" id="Curve_ylg2h"]
+_data = [Vector2(0, 0), 1.0, 1.0, 0, 0, Vector2(1, 1), 1.0, 1.0, 0, 0]
+point_count = 2
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_j0l1l"]
+frequency = 1.0
+
+[sub_resource type="Resource" id="Resource_5dqsw"]
+script = ExtResource("2_kjtt4")
+noise_control = SubResource("Curve_ylg2h")
+noise_generator = SubResource("FastNoiseLite_j0l1l")
+metadata/_custom_type_script = "uid://b7wtac62qb1fc"
+
+[sub_resource type="Curve" id="Curve_ipcg4"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.25663716, 1), 0.0, 0.0, 0, 0, Vector2(0.50884956, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_ylg2h"]
+curve = SubResource("Curve_ipcg4")
+
+[sub_resource type="Curve" id="Curve_j0l1l"]
+_data = [Vector2(0.26991153, 0), 0.0, 0.0, 0, 0, Vector2(0.50442475, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_aij2p"]
+curve = SubResource("Curve_j0l1l")
+
+[sub_resource type="Curve" id="Curve_opjcv"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.25663716, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_jcijy"]
+curve = SubResource("Curve_opjcv")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_ylg2h"]
+frequency = 0.1269
+
+[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_ylg2h"]
+noise = SubResource("FastNoiseLite_ylg2h")
+seamless = true
 
 [node name="PlanetGenerator" type="Node3D" unique_id=486556321]
 script = ExtResource("1_57qqk")
-subdivisions_per_edge = 4
+using_noise = true
+noise_layers = Array[ExtResource("2_kjtt4")]([SubResource("Resource_5dqsw")])
+using_terrain_shader = true
+grass_threshold = 0.5
+grass_curve = SubResource("CurveTexture_ylg2h")
+stone_curve = SubResource("CurveTexture_aij2p")
+sand_curve = SubResource("CurveTexture_jcijy")
+using_water = true
+water_color = Color(0, 1, 1, 0.6901961)
+wave_noise = SubResource("NoiseTexture3D_ylg2h")
+
+[node name="Planet" type="Node3D" parent="." unique_id=825012721]

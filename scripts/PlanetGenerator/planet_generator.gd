@@ -1,17 +1,61 @@
 @tool
 extends Node3D
 
+var planet_shader := load("res://shaders/planet.gdshader")
+var water_shader := load("res://shaders/water.gdshader")
+
 @export_tool_button("Generate Sphere") var sphere_plugin = func():
-	var sphere = MeshInstance3D.new()
-	sphere.mesh = generate_sphere(
+	var planet = Node3D.new()
+	planet.name = planet_name
+	
+	self.add_child(planet)
+	planet.owner = self
+	
+	var terrain = MeshInstance3D.new()
+	terrain.name = "Terrain"
+	terrain.mesh = generate_sphere(
 		radius,
 		subdivisions_per_edge,
 		using_noise,
 		noise_layers,
 	)
-	sphere.name = planet_name
-	self.add_child(sphere)
-	sphere.owner = self
+	
+	if using_terrain_shader:
+		var terrain_material := ShaderMaterial.new()
+		terrain_material.shader = planet_shader
+		terrain_material.set_shader_parameter("minimum_radius", radius)
+		terrain_material.set_shader_parameter("maximum_radius", maximum_radius)
+		terrain_material.set_shader_parameter("grass_threshold", grass_threshold)
+		terrain_material.set_shader_parameter("grass_color", grass_color)
+		terrain_material.set_shader_parameter("stone_color", stone_color)
+		terrain_material.set_shader_parameter("sand_color", sand_color)
+		terrain_material.set_shader_parameter("grass_curve", grass_curve)
+		terrain_material.set_shader_parameter("stone_curve", stone_curve)
+		terrain_material.set_shader_parameter("sand_curve", sand_curve)
+		terrain.material_override = terrain_material
+	
+	if using_water:
+		var water = MeshInstance3D.new()
+		water.name = "Water"
+		water.mesh = generate_sphere(
+			water_radius, 8, false, []
+		)
+		dynamic_preview_water.visible = true
+		var water_material := ShaderMaterial.new()
+		water_material.shader = water_shader
+		water_material.set_shader_parameter("water_color", water_color)
+		water_material.set_shader_parameter("water_color_falloff", water_color_falloff)
+		water_material.set_shader_parameter("wave_noise", wave_noise)
+		water_material.set_shader_parameter("wave_strength", wave_strength)
+		water_material.set_shader_parameter("wave_speed", wave_speed)
+		water.material_override = water_material
+		
+		planet.add_child(water)
+		water.owner = self
+	
+	planet.add_child(terrain)
+	terrain.owner = self
+	
 	dynamic_preview = false
 
 @export_tool_button("Force Update Preview") var preview_plugin = func():
@@ -35,16 +79,51 @@ extends Node3D
 		dynamic_preview = v
 		dynamic_preview_object.visible = v
 
-var dynamic_preview_object = MeshInstance3D.new()
+var dynamic_preview_object := Node3D.new()
+var dynamic_preview_planet := MeshInstance3D.new()
+var dynamic_preview_water := MeshInstance3D.new()
 
 var dynamic_preview_object_generator = func():
-	dynamic_preview_object.mesh = generate_sphere(
+	dynamic_preview_planet.mesh = generate_sphere(
 		radius,
 		subdivisions_per_edge,
 		using_noise,
 		noise_layers,
 	)
-	dynamic_preview_object.name = planet_name
+	
+	dynamic_preview_water.mesh = generate_sphere(
+		water_radius, 8, false, []
+	)
+	
+	if using_terrain_shader:
+		var terrain_material := ShaderMaterial.new()
+		terrain_material.shader = planet_shader
+		terrain_material.set_shader_parameter("minimum_radius", radius)
+		terrain_material.set_shader_parameter("maximum_radius", maximum_radius)
+		terrain_material.set_shader_parameter("grass_threshold", grass_threshold)
+		terrain_material.set_shader_parameter("grass_color", grass_color)
+		terrain_material.set_shader_parameter("stone_color", stone_color)
+		terrain_material.set_shader_parameter("sand_color", sand_color)
+		terrain_material.set_shader_parameter("grass_curve", grass_curve)
+		terrain_material.set_shader_parameter("stone_curve", stone_curve)
+		terrain_material.set_shader_parameter("sand_curve", sand_curve)
+		dynamic_preview_planet.material_override = terrain_material
+	else:
+		dynamic_preview_planet.material_override = null
+	
+	if using_water:
+		dynamic_preview_water.visible = true
+		var water_material := ShaderMaterial.new()
+		water_material.shader = water_shader
+		water_material.set_shader_parameter("water_color", water_color)
+		water_material.set_shader_parameter("water_color_falloff", water_color_falloff)
+		water_material.set_shader_parameter("wave_noise", wave_noise)
+		water_material.set_shader_parameter("wave_strength", wave_strength)
+		water_material.set_shader_parameter("wave_speed", wave_speed)
+		dynamic_preview_water.material_override = water_material
+	else:
+		dynamic_preview_water.material_override = null
+		dynamic_preview_water.visible = false
 
 @export_group("Planet Terrain")
 
@@ -58,9 +137,87 @@ var dynamic_preview_object_generator = func():
 		noise_layers = v
 		if (dynamic_preview): dynamic_preview_object_generator.call()
 
-#@export var use_heightmap_noise: bool = false
+@export var using_terrain_shader: bool = false:
+	set(v):
+		using_terrain_shader = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
 
-#@export var use_color_noise: bool = false
+@export var maximum_radius: float = 2.0:
+	set(v):
+		maximum_radius = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var grass_threshold: float = 1.0:
+	set(v):
+		grass_threshold = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var grass_color: Color = Color.LAWN_GREEN:
+	set(v):
+		grass_color = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var stone_color: Color = Color.SLATE_GRAY:
+	set(v):
+		stone_color = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var sand_color: Color = Color.SANDY_BROWN:
+	set(v):
+		sand_color = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var grass_curve: CurveTexture = CurveTexture.new():
+	set(v):
+		grass_curve = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var stone_curve: CurveTexture = CurveTexture.new():
+	set(v):
+		stone_curve = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var sand_curve: CurveTexture = CurveTexture.new():
+	set(v):
+		sand_curve = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export_group("Planet Water")
+
+@export var using_water: bool = false:
+	set(v):
+		using_water = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var water_radius: float = 1.01:
+	set(v):
+		water_radius = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var water_color: Color = Color.AQUA:
+	set(v):
+		water_color = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var water_color_falloff: float = 3.0:
+	set(v):
+		water_color_falloff = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var wave_noise: NoiseTexture3D:
+	set(v):
+		wave_noise = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var wave_strength: float = 0.2:
+	set(v):
+		wave_strength = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var wave_speed: float = 0.03:
+	set(v):
+		wave_speed = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
 
 func generate_face(side_square_count: int, uv_position: Vector2) -> Mesh:
 	# Create the mesh for a single face.
@@ -231,5 +388,7 @@ func generate_sphere(
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	dynamic_preview_object.name = "Dynamic Preview"
-	self.add_child(dynamic_preview_object)
+	self.add_child(dynamic_preview_object)	
+	dynamic_preview_object.add_child(dynamic_preview_planet)
+	dynamic_preview_object.add_child(dynamic_preview_water)
 	pass # Replace with function body.
