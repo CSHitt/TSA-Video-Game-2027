@@ -1,0 +1,89 @@
+[gd_scene format=3 uid="uid://rgrr5g7i8p38"]
+
+[ext_resource type="ArrayMesh" uid="uid://3531gf0nt0fc" path="res://assets/monkey.obj" id="1_yf5gv"]
+
+[sub_resource type="GDScript" id="GDScript_dg2ed"]
+script/source = "extends Node3D
+
+@onready var smesh = $MeshInstance3D
+@onready var array = smesh.mesh.surface_get_arrays(0)
+@onready var timer: Timer = $Timer
+var total_verticies = PackedInt32Array()
+var new = ArrayMesh.new()
+var color
+var material = StandardMaterial3D.new()
+
+var copy = MeshInstance3D.new()
+
+func _ready() -> void:
+	
+	
+	var indices = array[Mesh.ARRAY_INDEX]
+	for i in range(0, indices.size(), 3):
+		await timer.timeout
+		#print(indices[i], \", \", indices[i + 1], \", \", indices[i + 2])
+		update_mesh(indices[i],indices[i+1],indices[i+2])
+	
+	
+
+	
+func update_mesh(x,y,z):
+	#print(array[Mesh.ARRAY_INDEX])
+
+	total_verticies.append_array(PackedInt32Array([x, y, z]))
+	array[Mesh.ARRAY_INDEX] = total_verticies
+	
+	new.clear_surfaces()
+	new.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, array) 
+	copy.mesh = new
+	copy.set_surface_override_material(0, material)
+	if not copy.is_inside_tree():
+		add_child(copy)
+	material.albedo_color = Color(\"darkgreen\")
+	material.cull_mode = BaseMaterial3D.CULL_DISABLED
+
+	
+	
+
+
+#func _on_timer_timeout() -> void:
+func _process(delta: float) -> void:
+	copy.global_rotation_degrees.y +=5*delta
+"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yf5gv"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tf7wu"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_yf5gv"]
+sky_material = SubResource("ProceduralSkyMaterial_tf7wu")
+
+[sub_resource type="Environment" id="Environment_eoqfn"]
+background_mode = 2
+sky = SubResource("Sky_yf5gv")
+
+[node name="Fungus" type="Node3D" unique_id=1045265584]
+script = SubResource("GDScript_dg2ed")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1777692462]
+visible = false
+material_override = SubResource("StandardMaterial3D_yf5gv")
+mesh = ExtResource("1_yf5gv")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=717740751]
+environment = SubResource("Environment_eoqfn")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1431400444]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=402953227]
+transform = Transform3D(1, 0, 0, 0, 0.91342473, 0.40700796, 0, -0.40700793, 0.91342473, 0, 0.9607599, 2.1044533)
+
+[node name="Timer" type="Timer" parent="." unique_id=1863834200]
+wait_time = 0.009999999999999998
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
