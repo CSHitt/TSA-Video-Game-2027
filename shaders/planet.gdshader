@@ -45,7 +45,7 @@ void fragment() {
 	vec3 final_color;
 	
 	if (n_normal_dist > grass_threshold) {
-			final_color = mix(
+		final_color = mix(
 			base_color,
 			grass_color,
 			n_normal_dist * grass_sample

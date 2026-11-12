@@ -8,6 +8,8 @@ uniform float wave_strength : hint_range(0.0, 1.0) = 0.2;
 uniform float wave_speed = 0.03;
 
 void fragment() {
+	// Determine pixel's world coordinate
+	vec3 pixel_position = (INV_VIEW_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	// Determine the direction from the center of the water
 	// to the camera.
 	vec3 water_to_camera_normal = normalize(CAMERA_POSITION_WORLD - NODE_POSITION_WORLD);
@@ -15,7 +17,7 @@ void fragment() {
 	// Apply some wavyness first
 	NORMAL += texture(
 		wave_noise, 
-		(INV_VIEW_MATRIX * vec4(vec3(VERTEX.x + TIME * wave_speed, VERTEX.yz), 1.0)).rgb
+		pixel_position + vec3(TIME * wave_speed, 0.0, 0.0)
 	).rgb * wave_strength;
 	vec3 pixel_normal = (INV_VIEW_MATRIX * vec4(NORMAL, 0.0)).xyz;
 	

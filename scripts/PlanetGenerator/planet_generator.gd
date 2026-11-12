@@ -2,6 +2,7 @@
 extends Node3D
 
 var planet_shader := load("res://shaders/planet.gdshader")
+var hq_planet_shader := load("res://shaders/planet_hq.gdshader")
 var water_shader := load("res://shaders/water.gdshader")
 
 @export_tool_button("Generate Sphere") var sphere_plugin = func():
@@ -16,29 +17,40 @@ var water_shader := load("res://shaders/water.gdshader")
 	terrain.mesh = generate_sphere(
 		radius,
 		subdivisions_per_edge,
-		using_noise,
-		noise_layers,
+		noise if (using_noise) else null
 	)
 	
 	if using_terrain_shader:
 		var terrain_material := ShaderMaterial.new()
-		terrain_material.shader = planet_shader
+		terrain_material.shader = 	hq_planet_shader if using_high_quality_terrain else planet_shader
 		terrain_material.set_shader_parameter("minimum_radius", radius)
 		terrain_material.set_shader_parameter("maximum_radius", maximum_radius)
 		terrain_material.set_shader_parameter("grass_threshold", grass_threshold)
-		terrain_material.set_shader_parameter("grass_color", grass_color)
-		terrain_material.set_shader_parameter("stone_color", stone_color)
-		terrain_material.set_shader_parameter("sand_color", sand_color)
-		terrain_material.set_shader_parameter("grass_curve", grass_curve)
-		terrain_material.set_shader_parameter("stone_curve", stone_curve)
-		terrain_material.set_shader_parameter("sand_curve", sand_curve)
-		terrain.material_override = terrain_material
+		if using_high_quality_terrain:
+			terrain_material.set_shader_parameter("texture_scale", texture_scale)
+			terrain_material.set_shader_parameter("normal_strength", normal_strength)
+			terrain_material.set_shader_parameter("grass_texture", grass_texture)
+			terrain_material.set_shader_parameter("grass_normal_texture", grass_normal_texture)
+			terrain_material.set_shader_parameter("stone_texture", stone_texture)
+			terrain_material.set_shader_parameter("stone_normal_texture", stone_normal_texture)
+			terrain_material.set_shader_parameter("sand_texture", sand_texture)
+			terrain_material.set_shader_parameter("sand_normal_texture", sand_normal_texture)
+		else:
+			terrain_material.set_shader_parameter("grass_color", grass_color)
+			terrain_material.set_shader_parameter("stone_color", stone_color)
+			terrain_material.set_shader_parameter("sand_color", sand_color)
+			terrain_material.set_shader_parameter("grass_curve", grass_curve)
+			terrain_material.set_shader_parameter("stone_curve", stone_curve)
+			terrain_material.set_shader_parameter("sand_curve", sand_curve)
+		dynamic_preview_planet.material_override = terrain_material
+	else:
+		dynamic_preview_planet.material_override = null
 	
 	if using_water:
 		var water = MeshInstance3D.new()
 		water.name = "Water"
 		water.mesh = generate_sphere(
-			water_radius, 8, false, []
+			water_radius, 8, null
 		)
 		dynamic_preview_water.visible = true
 		var water_material := ShaderMaterial.new()
@@ -78,6 +90,7 @@ var water_shader := load("res://shaders/water.gdshader")
 	set(v):
 		dynamic_preview = v
 		dynamic_preview_object.visible = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
 
 var dynamic_preview_object := Node3D.new()
 var dynamic_preview_planet := MeshInstance3D.new()
@@ -87,26 +100,35 @@ var dynamic_preview_object_generator = func():
 	dynamic_preview_planet.mesh = generate_sphere(
 		radius,
 		subdivisions_per_edge,
-		using_noise,
-		noise_layers,
+		noise if (using_noise) else null
 	)
 	
 	dynamic_preview_water.mesh = generate_sphere(
-		water_radius, 8, false, []
+		water_radius, 8, null
 	)
 	
 	if using_terrain_shader:
 		var terrain_material := ShaderMaterial.new()
-		terrain_material.shader = planet_shader
+		terrain_material.shader = 	hq_planet_shader if using_high_quality_terrain else planet_shader
 		terrain_material.set_shader_parameter("minimum_radius", radius)
 		terrain_material.set_shader_parameter("maximum_radius", maximum_radius)
 		terrain_material.set_shader_parameter("grass_threshold", grass_threshold)
-		terrain_material.set_shader_parameter("grass_color", grass_color)
-		terrain_material.set_shader_parameter("stone_color", stone_color)
-		terrain_material.set_shader_parameter("sand_color", sand_color)
-		terrain_material.set_shader_parameter("grass_curve", grass_curve)
-		terrain_material.set_shader_parameter("stone_curve", stone_curve)
-		terrain_material.set_shader_parameter("sand_curve", sand_curve)
+		if using_high_quality_terrain:
+			terrain_material.set_shader_parameter("texture_scale", texture_scale)
+			terrain_material.set_shader_parameter("normal_strength", normal_strength)
+			terrain_material.set_shader_parameter("grass_texture", grass_texture)
+			terrain_material.set_shader_parameter("grass_normal_texture", grass_normal_texture)
+			terrain_material.set_shader_parameter("stone_texture", stone_texture)
+			terrain_material.set_shader_parameter("stone_normal_texture", stone_normal_texture)
+			terrain_material.set_shader_parameter("sand_texture", sand_texture)
+			terrain_material.set_shader_parameter("sand_normal_texture", sand_normal_texture)
+		else:
+			terrain_material.set_shader_parameter("grass_color", grass_color)
+			terrain_material.set_shader_parameter("stone_color", stone_color)
+			terrain_material.set_shader_parameter("sand_color", sand_color)
+			terrain_material.set_shader_parameter("grass_curve", grass_curve)
+			terrain_material.set_shader_parameter("stone_curve", stone_curve)
+			terrain_material.set_shader_parameter("sand_curve", sand_curve)
 		dynamic_preview_planet.material_override = terrain_material
 	else:
 		dynamic_preview_planet.material_override = null
@@ -130,24 +152,27 @@ var dynamic_preview_object_generator = func():
 @export var using_noise: bool = false:
 	set(v):
 		using_noise = v
+		notify_property_list_changed()
 		if (dynamic_preview): dynamic_preview_object_generator.call()
 
-@export var noise_layers: Array[NoiseLayer] = []:
+@export var noise: NoiseLayer = null:
 	set(v):
-		noise_layers = v
+		noise = v
 		if (dynamic_preview): dynamic_preview_object_generator.call()
 
 @export var using_terrain_shader: bool = false:
 	set(v):
 		using_terrain_shader = v
+		notify_property_list_changed()
 		if (dynamic_preview): dynamic_preview_object_generator.call()
 
 @export var maximum_radius: float = 2.0:
 	set(v):
 		maximum_radius = v
+		notify_property_list_changed()
 		if (dynamic_preview): dynamic_preview_object_generator.call()
 
-@export var grass_threshold: float = 1.0:
+@export var grass_threshold: float = 0.5:
 	set(v):
 		grass_threshold = v
 		if (dynamic_preview): dynamic_preview_object_generator.call()
@@ -182,11 +207,60 @@ var dynamic_preview_object_generator = func():
 		sand_curve = v
 		if (dynamic_preview): dynamic_preview_object_generator.call()
 
+@export_group("High Quality Planet Terrain")
+
+@export var using_high_quality_terrain: bool = false:
+	set(v):
+		using_high_quality_terrain = v
+		notify_property_list_changed()
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var texture_scale: float = 1.0:
+	set(v):
+		texture_scale = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var normal_strength: float = 1.0:
+	set(v):
+		normal_strength = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var grass_texture: Texture2D:
+	set(v):
+		grass_texture = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var grass_normal_texture: Texture2D:
+	set(v):
+		grass_normal_texture = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var stone_texture: Texture2D:
+	set(v):
+		stone_texture = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var stone_normal_texture: Texture2D:
+	set(v):
+		stone_normal_texture = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var sand_texture: Texture2D:
+	set(v):
+		sand_texture = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+@export var sand_normal_texture: Texture2D:
+	set(v):
+		sand_normal_texture = v
+		if (dynamic_preview): dynamic_preview_object_generator.call()
+
 @export_group("Planet Water")
 
 @export var using_water: bool = false:
 	set(v):
 		using_water = v
+		notify_property_list_changed()
 		if (dynamic_preview): dynamic_preview_object_generator.call()
 
 @export var water_radius: float = 1.01:
@@ -218,6 +292,39 @@ var dynamic_preview_object_generator = func():
 	set(v):
 		wave_speed = v
 		if (dynamic_preview): dynamic_preview_object_generator.call()
+
+func _validate_property(property: Dictionary) -> void:
+	if not using_noise:
+		match property.name:
+			"noise_layers": property.usage |= PROPERTY_USAGE_READ_ONLY
+	if not using_terrain_shader:
+		match property.name:
+			"maximum_radius": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"grass_threshold": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"grass_color": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"stone_color": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"sand_color": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"grass_curve": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"stone_curve": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"sand_curve": property.usage |= PROPERTY_USAGE_READ_ONLY
+	if not using_high_quality_terrain:
+		match property.name:
+			"texture_scale": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"normal_strength": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"grass_texture": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"grass_normal_texture": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"stone_texture": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"stone_normal_texture": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"sand_texture": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"sand_normal_texture": property.usage |= PROPERTY_USAGE_READ_ONLY
+	if not using_water:
+		match property.name:
+			"water_radius": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"water_color": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"water_color_falloff": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"wave_noise": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"wave_strength": property.usage |= PROPERTY_USAGE_READ_ONLY
+			"wave_speed": property.usage |= PROPERTY_USAGE_READ_ONLY
 
 func generate_face(side_square_count: int, uv_position: Vector2) -> Mesh:
 	# Create the mesh for a single face.
@@ -262,8 +369,7 @@ func generate_face(side_square_count: int, uv_position: Vector2) -> Mesh:
 func generate_sphere(
 	rad: float,
 	side_square_count: int,
-	noise: bool = false,
-	layers: Array[NoiseLayer] = [],
+	noise: NoiseLayer = null
 	):
 	
 	var sphere = SurfaceTool.new()
@@ -367,11 +473,10 @@ func generate_sphere(
 		var copied_vertex = mesh[Mesh.ARRAY_VERTEX][index]
 		
 		var height = rad
-		if (noise):
-			for layer in layers:
-				var noise_value = layer.noise_generator.get_noise_3dv(copied_vertex)
-				# Apply the noise layer's sampling curve
-				height += layer.noise_control.sample(noise_value)
+		if (noise != null):
+			var noise_value = noise.noise_generator.get_noise_3dv(copied_vertex)
+			# Apply the noise layer's sampling curve
+			height += noise.noise_control.sample(noise_value)
 		# Multiply by the radius to get the right length
 		mesh[Mesh.ARRAY_VERTEX][index] *= height
 	
