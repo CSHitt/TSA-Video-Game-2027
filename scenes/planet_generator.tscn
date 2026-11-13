@@ -24,7 +24,6 @@ noise_control = SubResource("Curve_ylg2h")
 noise_generator = SubResource("FastNoiseLite_j0l1l")
 noise_power = 1.5
 noise_max = 2.0
-using_normalization = null
 metadata/_custom_type_script = "uid://b7wtac62qb1fc"
 
 [sub_resource type="Curve" id="Curve_j0l1l"]
@@ -62,21 +61,21 @@ noise_max = -0.2
 metadata/_custom_type_script = "uid://b7wtac62qb1fc"
 
 [sub_resource type="Curve" id="Curve_opjcv"]
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.18141593, 0.67283946), -2.9306972, -2.9306972, 0, 0, Vector2(0.99115044, 0), 0.0, 0.0, 0, 0]
-point_count = 3
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.99115044, 0), 0.0, 0.0, 0, 0]
+point_count = 2
 
 [sub_resource type="CurveTexture" id="CurveTexture_57qqk"]
 curve = SubResource("Curve_opjcv")
 
 [sub_resource type="Curve" id="Curve_aij2p"]
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.65486723, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
-point_count = 3
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
 
 [sub_resource type="CurveTexture" id="CurveTexture_5dqsw"]
 curve = SubResource("Curve_aij2p")
 
 [sub_resource type="Curve" id="Curve_jcijy"]
-_data = [Vector2(0, 0.5178572), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+_data = [Vector2(0.92035395, 1), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
 
 [sub_resource type="CurveTexture" id="CurveTexture_kjtt4"]
@@ -92,7 +91,7 @@ seamless = true
 [node name="PlanetGenerator" type="Node3D" unique_id=486556321]
 script = ExtResource("1_57qqk")
 radius = 2.0
-subdivisions_per_edge = 32
+subdivisions_per_edge = 12
 dynamic_preview = true
 using_noise = true
 noise_layers = Array[ExtResource("2_5dqsw")]([SubResource("Resource_ylg2h"), SubResource("Resource_opjcv"), SubResource("Resource_g4v7s")])
@@ -102,14 +101,12 @@ grass_threshold = 0.59
 grass_curve = SubResource("CurveTexture_57qqk")
 stone_curve = SubResource("CurveTexture_5dqsw")
 sand_curve = SubResource("CurveTexture_kjtt4")
-using_high_quality_terrain = true
 grass_texture = ExtResource("3_jcijy")
 grass_normal_texture = ExtResource("4_ipcg4")
 stone_texture = ExtResource("5_fcntt")
 stone_normal_texture = ExtResource("6_pdtbk")
 sand_texture = ExtResource("7_xxh1b")
 sand_normal_texture = ExtResource("8_c37a1")
-using_water = true
-water_radius = 2.03
+water_radius = 1.9
 water_color = Color(0, 1, 1, 0.6901961)
 wave_noise = SubResource("NoiseTexture3D_ylg2h")

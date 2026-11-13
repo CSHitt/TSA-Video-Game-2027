@@ -27,6 +27,9 @@ var water_shader := load("res://shaders/water.gdshader")
 		terrain_material.set_shader_parameter("minimum_radius", radius)
 		terrain_material.set_shader_parameter("maximum_radius", maximum_radius)
 		terrain_material.set_shader_parameter("grass_threshold", grass_threshold)
+		terrain_material.set_shader_parameter("grass_curve", grass_curve)
+		terrain_material.set_shader_parameter("stone_curve", stone_curve)
+		terrain_material.set_shader_parameter("sand_curve", sand_curve)
 		if using_high_quality_terrain:
 			terrain_material.set_shader_parameter("texture_scale", texture_scale)
 			terrain_material.set_shader_parameter("normal_strength", normal_strength)
@@ -40,9 +43,6 @@ var water_shader := load("res://shaders/water.gdshader")
 			terrain_material.set_shader_parameter("grass_color", grass_color)
 			terrain_material.set_shader_parameter("stone_color", stone_color)
 			terrain_material.set_shader_parameter("sand_color", sand_color)
-			terrain_material.set_shader_parameter("grass_curve", grass_curve)
-			terrain_material.set_shader_parameter("stone_curve", stone_curve)
-			terrain_material.set_shader_parameter("sand_curve", sand_curve)
 		terrain.material_override = terrain_material
 	else:
 		terrain.material_override = null
@@ -111,6 +111,9 @@ var dynamic_preview_object_generator = func():
 		terrain_material.set_shader_parameter("minimum_radius", radius)
 		terrain_material.set_shader_parameter("maximum_radius", maximum_radius)
 		terrain_material.set_shader_parameter("grass_threshold", grass_threshold)
+		terrain_material.set_shader_parameter("grass_curve", grass_curve)
+		terrain_material.set_shader_parameter("stone_curve", stone_curve)
+		terrain_material.set_shader_parameter("sand_curve", sand_curve)
 		if using_high_quality_terrain:
 			terrain_material.set_shader_parameter("texture_scale", texture_scale)
 			terrain_material.set_shader_parameter("normal_strength", normal_strength)
@@ -124,9 +127,6 @@ var dynamic_preview_object_generator = func():
 			terrain_material.set_shader_parameter("grass_color", grass_color)
 			terrain_material.set_shader_parameter("stone_color", stone_color)
 			terrain_material.set_shader_parameter("sand_color", sand_color)
-			terrain_material.set_shader_parameter("grass_curve", grass_curve)
-			terrain_material.set_shader_parameter("stone_curve", stone_curve)
-			terrain_material.set_shader_parameter("sand_curve", sand_curve)
 		dynamic_preview_planet.material_override = terrain_material
 	else:
 		dynamic_preview_planet.material_override = null
