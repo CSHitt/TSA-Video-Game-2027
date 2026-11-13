@@ -42,17 +42,18 @@ void fragment() {
 	);
 	
 	// If the surface is relatively flat, apply a grass color
-	vec3 final_color;
-	
-	if (n_normal_dist > grass_threshold) {
-		final_color = mix(
-			base_color,
-			grass_color,
-			n_normal_dist * grass_sample
-		);
-	} else {
-		final_color = base_color;
-	}
+	vec3 final_color = mix(
+		base_color,
+		grass_color,
+		// Apply a smooth transition
+		// if n_normal_dist > grass_threshold, draw grass
+		// else, draw base color
+		smoothstep( 
+			grass_threshold - 0.025,
+			grass_threshold + 0.025,
+			n_normal_dist
+		) * grass_sample
+	);
 	
 	ALBEDO = final_color;
 }

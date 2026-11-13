@@ -17,7 +17,8 @@ var water_shader := load("res://shaders/water.gdshader")
 	terrain.mesh = generate_sphere(
 		radius,
 		subdivisions_per_edge,
-		noise if (using_noise) else null
+		true,
+		noise_layers
 	)
 	
 	if using_terrain_shader:
@@ -42,16 +43,14 @@ var water_shader := load("res://shaders/water.gdshader")
 			terrain_material.set_shader_parameter("grass_curve", grass_curve)
 			terrain_material.set_shader_parameter("stone_curve", stone_curve)
 			terrain_material.set_shader_parameter("sand_curve", sand_curve)
-		dynamic_preview_planet.material_override = terrain_material
+		terrain.material_override = terrain_material
 	else:
-		dynamic_preview_planet.material_override = null
+		terrain.material_override = null
 	
 	if using_water:
 		var water = MeshInstance3D.new()
 		water.name = "Water"
-		water.mesh = generate_sphere(
-			water_radius, 8, null
-		)
+		water.mesh = generate_sphere(water_radius, 8)
 		dynamic_preview_water.visible = true
 		var water_material := ShaderMaterial.new()
 		water_material.shader = water_shader
@@ -100,12 +99,11 @@ var dynamic_preview_object_generator = func():
 	dynamic_preview_planet.mesh = generate_sphere(
 		radius,
 		subdivisions_per_edge,
-		noise if (using_noise) else null
+		true,
+		noise_layers
 	)
 	
-	dynamic_preview_water.mesh = generate_sphere(
-		water_radius, 8, null
-	)
+	dynamic_preview_water.mesh = generate_sphere(water_radius, 8)
 	
 	if using_terrain_shader:
 		var terrain_material := ShaderMaterial.new()
@@ -155,9 +153,9 @@ var dynamic_preview_object_generator = func():
 		notify_property_list_changed()
 		if (dynamic_preview): dynamic_preview_object_generator.call()
 
-@export var noise: NoiseLayer = null:
+@export var noise_layers: Array[NoiseLayer] = []:
 	set(v):
-		noise = v
+		noise_layers = v
 		if (dynamic_preview): dynamic_preview_object_generator.call()
 
 @export var using_terrain_shader: bool = false:
@@ -369,7 +367,8 @@ func generate_face(side_square_count: int, uv_position: Vector2) -> Mesh:
 func generate_sphere(
 	rad: float,
 	side_square_count: int,
-	noise: NoiseLayer = null
+	using_noise: bool = false,
+	noise_layers: Array[NoiseLayer] = []
 	):
 	
 	var sphere = SurfaceTool.new()
@@ -453,6 +452,14 @@ func generate_sphere(
 		Vector3(0.0, 0.0, -1.0) 	# -Z; Backward
 	)
 	
+	# Apply optimizations before committing.
+	# This improves CPU and GPU performance by removing duplicate
+	# verticies.
+	#sphere.index()
+	# This only really improves performance when rendering because
+	# it sorts triangles that makes rendering faster
+	#sphere.optimize_indices_for_cache()
+	
 	var mesh: Array = sphere.commit_to_arrays()
 	
 	# Turn the cube into a sphere by normalizing each vertex,
@@ -473,10 +480,9 @@ func generate_sphere(
 		var copied_vertex = mesh[Mesh.ARRAY_VERTEX][index]
 		
 		var height = rad
-		if (noise != null):
-			var noise_value = noise.noise_generator.get_noise_3dv(copied_vertex)
-			# Apply the noise layer's sampling curve
-			height += noise.noise_control.sample(noise_value)
+		if (using_noise):
+			for layer in range(noise_layers.size()):
+				height += noise_layers[layer].sample(copied_vertex)
 		# Multiply by the radius to get the right length
 		mesh[Mesh.ARRAY_VERTEX][index] *= height
 	
